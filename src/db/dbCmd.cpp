@@ -23,8 +23,8 @@ initDbCmd()
   if (!(cmdMgr->regCmd("DBAPpend", 4, new DBAppendCmd) &&
          cmdMgr->regCmd("DBAVerage", 4, new DBAveCmd) &&
          cmdMgr->regCmd("DBCount", 3, new DBCountCmd) &&
-         cmdMgr->regCmd("DBMAx", 3, new DBMaxCmd) &&
-         cmdMgr->regCmd("DBMIn", 3, new DBMinCmd) /*&&
+         cmdMgr->regCmd("DBMAx", 4, new DBMaxCmd) &&
+         cmdMgr->regCmd("DBMIn", 4, new DBMinCmd) /*&&
          cmdMgr->regCmd("DBPrint", 3, new DBPrintCmd) &&
          cmdMgr->regCmd("DBRead", 3, new DBReadCmd) &&
          cmdMgr->regCmd("DBSOrt", 3, new DBSortCmd) &&
@@ -53,8 +53,6 @@ DBAppendCmd::exec(const string& option)
   if (!myStr2Int(tokens.back(),value))
     return CmdExec::errorOption(CMD_OPT_ILLEGAL, tokens.back());
   DBJsonElem elem(tokens.front(),value);
-  cout << tokens.front() << " " << value << endl;
-  cout << dbjson << endl;
   if(!dbjson.add(elem)){
     cerr << "Element with key \"" << tokens.front() << "\" already exists!!" << endl;
     return CMD_EXEC_ERROR;
@@ -225,8 +223,15 @@ CmdExecStatus
 DBPrintCmd::exec(const string& option)
 {  
    // TODO...
+  string token;
+  if (!CmdExec::lexSingleOption(option, token))
+    return CMD_EXEC_ERROR;
+  if (token.size()) {
 
-   return CMD_EXEC_DONE;
+  }
+  else
+    cout << dbjson << endl;
+  return CMD_EXEC_DONE;
 }
 
 void
