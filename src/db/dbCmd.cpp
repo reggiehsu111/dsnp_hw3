@@ -24,11 +24,11 @@ initDbCmd()
          cmdMgr->regCmd("DBAVerage", 4, new DBAveCmd) &&
          cmdMgr->regCmd("DBCount", 3, new DBCountCmd) &&
          cmdMgr->regCmd("DBMAx", 4, new DBMaxCmd) &&
-         cmdMgr->regCmd("DBMIn", 4, new DBMinCmd) /*&&
+         cmdMgr->regCmd("DBMIn", 4, new DBMinCmd) &&
          cmdMgr->regCmd("DBPrint", 3, new DBPrintCmd) &&
          cmdMgr->regCmd("DBRead", 3, new DBReadCmd) &&
-         cmdMgr->regCmd("DBSOrt", 3, new DBSortCmd) &&
-         cmdMgr->regCmd("DBSUm", 3, new DBSumCmd)*/
+         cmdMgr->regCmd("DBSOrt", 4, new DBSortCmd) &&
+         cmdMgr->regCmd("DBSUm", 4, new DBSumCmd)
       )) {
       cerr << "Registering \"init\" DBcommands fails... exiting" << endl;
       return false;
@@ -54,7 +54,7 @@ DBAppendCmd::exec(const string& option)
     return CmdExec::errorOption(CMD_OPT_ILLEGAL, tokens.back());
   DBJsonElem elem(tokens.front(),value);
   if(!dbjson.add(elem)){
-    cerr << "Element with key \"" << tokens.front() << "\" already exists!!" << endl;
+    cerr << "Error: Element with key \"" << tokens.front() << "\" already exists!!" << endl;
     return CMD_EXEC_ERROR;
   }
   return CMD_EXEC_DONE;
@@ -227,7 +227,15 @@ DBPrintCmd::exec(const string& option)
   if (!CmdExec::lexSingleOption(option, token))
     return CMD_EXEC_ERROR;
   if (token.size()) {
-
+    bool key_exist = false;
+    for (unsigned i=0; i < dbjson.size(); i++){
+      if (dbjson[i].key()==token){
+        cout << "{ \"" << dbjson[i].key() << "\" : " << dbjson[i].value() << " }" << endl;
+        key_exist = true;
+      }
+    }
+    if(!key_exist)
+      cerr << "Error: No JSON element with key \"" << token << "\" is found." << endl;
   }
   else
     cout << dbjson << endl;

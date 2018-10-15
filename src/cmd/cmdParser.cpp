@@ -289,6 +289,7 @@ void
 CmdParser::listCmd(const string& str)
 {
    // TODO...
+   cout << "try" << endl;
 }
 
 // cmd is a copy of the original input
