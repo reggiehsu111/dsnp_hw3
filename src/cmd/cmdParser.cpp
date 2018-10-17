@@ -289,7 +289,161 @@ void
 CmdParser::listCmd(const string& str)
 {
    // TODO...
-   cout << "try" << endl;
+   // 1. LIST ALL COMMANDS
+   static int tab_times = 1;
+   size_t begin = str.find_first_not_of(' ');
+   if (begin == string::npos){
+      int j =0;
+      for(CmdMap::const_iterator i = _cmdMap.begin(); i != _cmdMap.end(); i++){
+         if(!(j%5))
+            cout << endl;
+         cout << setw(12) << left << i->first + i->second->getOptCmd() << flush;
+         j++;
+      }
+      tab_times = 1;
+      reprintCmd();
+      return;
+   }
+   else{
+      string token = str.substr(begin,(_readBufPtr-_readBuf));
+      size_t end = token.find_first_of(' ');
+      string first_word = token.substr(0,end);
+      //2. LIST ALL PARTIALLY MATCHED COMMANDS
+      if(!getCmd(first_word)){
+         int j =0;
+         bool matched_flag = false;
+         string matched_command;
+         if(token!=first_word){
+            // 7. FIRST WORD NO MATCH
+            mybeep();
+            tab_times = 1;
+            return;
+         }
+         for (CmdMap::const_iterator i = _cmdMap.begin(); i != _cmdMap.end(); i++){
+            if(myStrNCmp(i->first, first_word, 1) == 0) {
+               j++;
+               matched_command = i->first+i->second->getOptCmd();
+            } 
+         }
+         if (j==1){
+             moveBufPtr(_readBuf);
+             for (unsigned i=0; i<first_word.size(); i++) 
+               deleteChar();
+            for(unsigned i=0;i<matched_command.size();i++)
+               insertChar(tolower(matched_command[i]));
+            insertChar(' ');
+         }
+         else if(j!=1){
+            j = 0;
+            for (CmdMap::const_iterator i = _cmdMap.begin(); i != _cmdMap.end(); i++){
+                     if(myStrNCmp(i->first, first_word, 1) == 0){
+                        if(!(j%5))
+                           cout << endl;
+                        cout << setw(12) << left << i->first + i->second->getOptCmd() << flush;
+                        j++;
+                        matched_flag = true;
+                     }
+                  }
+         }
+         if(!matched_flag){
+            // 4. NO MATCH IN FITST WORD
+            mybeep();
+            tab_times = 1;
+            return;
+         }
+         tab_times = 1;
+         reprintCmd();
+         return;
+      }
+      else{
+         if(token!=first_word){
+            if (tab_times == 1){
+               // 5. FIRST WORD ALREADY MATCHED ON FIRST TAB PRESSING
+               CmdExec* e = getCmd(first_word);
+               cout << endl;
+               e->usage(cout);
+               reprintCmd();
+               tab_times = 2;
+               return;
+            }
+            else{
+               // 6. FIRST WORD ALREADY MATCHED ON SECOND AND LATER TAB PRESSING
+               vector<string> files;
+               string prefix = token.substr(size_t(first_word.size()+1));
+               if(prefix[prefix.size()-1]==' ')
+                  prefix = "";
+               else if(prefix.size() && prefix[prefix.size()-1]!=' ')
+                  prefix = prefix.substr(prefix.find_first_not_of(' '));
+               const string dir = ".";
+               listDir(files,prefix,dir);
+               if(!files.size()){
+                  mybeep();
+                  return;
+               }
+               else if(files.size()==1){
+                  moveBufPtr(_readBufPtr-prefix.size());
+                  for (unsigned i=0; i<prefix.size(); i++)
+                     deleteChar();
+                  for(unsigned i=0; i<files[0].size(); i++){
+                     insertChar(files[0][i]);
+                  }
+                  insertChar(' ');
+                  return;
+               }
+               int common_prefix = 0;
+               bool diff_flag = false;
+               string common;
+               //check if common prefix exists
+               while(true){
+                  for (unsigned i=0; i<files.size()-1; i++){
+                     if(files[i][common_prefix]!=files[i+1][common_prefix]){
+                        diff_flag = true;
+                        break;
+                     }
+                  }
+                  if(diff_flag) break;
+                  common += files[0][common_prefix];
+                  common_prefix++;
+               }
+               if(int(prefix.size())==common_prefix){
+                  int j=0;
+                  for (unsigned i=0;i<files.size(); i++){
+                     if(!(j%5))
+                        cout << endl;
+                     cout << setw(16) << left << files[i];
+                     j++;
+                  }
+               }
+               else{
+                  moveBufPtr(_readBufPtr-prefix.size());
+                  for (unsigned i=0; i<prefix.size(); i++)
+                     deleteChar();
+                  for(unsigned i=0; i<common.size(); i++){
+                     insertChar(common[i]);
+                  }
+                  return;
+               }
+               reprintCmd();
+               return;
+            }
+         }
+         else{
+            // 3. LIST THE SINGLY MATCHED COMMAND
+             moveBufPtr(_readBuf);
+             for (unsigned i=0; i<first_word.size(); i++) 
+               deleteChar();
+            for (CmdMap::const_iterator i = _cmdMap.begin(); i != _cmdMap.end(); i++){
+               if (myStrNCmp(i->first + i->second->getOptCmd(), first_word, i->first.size()) == 0){
+                  for (unsigned j=0; j<(i->first + i->second->getOptCmd()).size();j++)
+                     insertChar(tolower((i->first + i->second->getOptCmd())[j]));
+                  insertChar(' ');
+               }
+            }
+            tab_times = 1;
+         }
+         return;
+      }
+   }
 }
 
 // cmd is a copy of the original input
