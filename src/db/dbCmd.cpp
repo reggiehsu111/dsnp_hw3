@@ -237,8 +237,10 @@ DBPrintCmd::exec(const string& option)
     if(!key_exist)
       cerr << "Error: No JSON element with key \"" << token << "\" is found." << endl;
   }
-  else
-    cout << dbjson << endl;
+  else{
+    cout << dbjson << flush;
+    cout << "Total JSON elements: " << dbjson.size() << endl;
+  }
   return CMD_EXEC_DONE;
 }
 

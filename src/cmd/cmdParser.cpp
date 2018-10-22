@@ -29,12 +29,16 @@ bool
 CmdParser::openDofile(const string& dof)
 {
    // TODO...
+   if (_dofileStack.size() > 252){
+      cout << "Error: dofile stack overflow " << "(" << _dofileStack.size()-1 << ")" << endl;
+      return false;
+   }
    _dofileStack.push(_dofile);
    _dofile = new ifstream(dof.c_str());
-   if(!(*_dofile)) {
+   if(!_dofile->is_open()) {
       delete _dofile;
-      _dofile = _dofileStack.top();
-      _dofileStack.pop();
+      _dofile =_dofileStack.top();
+       _dofileStack.pop();
       return false;
    }
    return true;
@@ -46,9 +50,15 @@ CmdParser::closeDofile()
 {
    assert(_dofile != 0);
    // TODO...
+   _dofile->close();
    delete _dofile;
-   _dofile = _dofileStack.top();
-   _dofileStack.pop();
+   if(_dofileStack.size()!=0){
+      _dofile = _dofileStack.top();
+      _dofileStack.pop();
+   }
+   if(!_dofileStack.size()){
+      _dofile = 0;
+   }
 
 }
 
@@ -87,8 +97,9 @@ CmdExecStatus
 CmdParser::execOneCmd()
 {
    bool newCmd = false;
-   if (_dofile != 0)
+   if (_dofile != 0){
       newCmd = readCmd(*_dofile);
+   }
    else
       newCmd = readCmd(cin);
 
@@ -109,6 +120,7 @@ CmdParser::printHelps() const
 {
    // TODO...
    for (CmdMap::const_iterator i = _cmdMap.begin(); i != _cmdMap.end(); i++) i->second->help();
+   cout << endl;
 }
 
 void

@@ -1,0 +1,136 @@
+mydb> do do1
+
+mydb> dbr ../tests/test1.json
+"../tests/test1.json" was read in successfully.
+
+mydb> dbp
+{
+  "Ric" : 100,
+  "John" : 50
+}
+Total JSON elements: 2
+
+mydb> dbap Mary 30
+
+mydb> dbap Mary 30
+Error: Element with key "Mary" already exists!!
+
+mydb> dbap
+Error: Missing option!!
+
+mydb> dbap Larry
+Error: Missing option!!
+
+mydb> dbap Larry 80 Hello
+Error: Extra option!! (Hello)
+
+mydb> dbap Larry XX
+Error: Illegal option!! (XX)
+
+mydb> dbap Larry 80
+
+mydb> dbp
+{
+  "Ric" : 100,
+  "John" : 50,
+  "Mary" : 30,
+  "Larry" : 80
+}
+Total JSON elements: 4
+
+mydb> dbp Ric
+{ "Ric" : 100 }
+
+mydb> dbp ric
+Error: No JSON element with key "ric" is found.
+
+mydb> dbav
+The average of the DB is 65.00.
+
+mydb> dbc
+There are 4 JSON elements in DB.
+
+mydb> dbap Ben -50
+
+mydb> dbp
+{
+  "Ric" : 100,
+  "John" : 50,
+  "Mary" : 30,
+  "Larry" : 80,
+  "Ben" : -50
+}
+Total JSON elements: 5
+
+mydb> dbma
+The max JSON element is { "Ric" : 100 }.
+
+mydb> dbmi
+The min JSON element is { "Ben" : -50 }.
+
+mydb> dbsort -v
+
+mydb> dbp
+{
+  "Ben" : -50,
+  "Mary" : 30,
+  "John" : 50,
+  "Larry" : 80,
+  "Ric" : 100
+}
+Total JSON elements: 5
+
+mydb> dbsort -v
+
+mydb> dbp
+{
+  "Ben" : -50,
+  "Mary" : 30,
+  "John" : 50,
+  "Larry" : 80,
+  "Ric" : 100
+}
+Total JSON elements: 5
+
+mydb> dbsort -k
+
+mydb> dbp
+{
+  "Ben" : -50,
+  "John" : 50,
+  "Larry" : 80,
+  "Mary" : 30,
+  "Ric" : 100
+}
+Total JSON elements: 5
+
+mydb> dbsort -v
+
+mydb> dbp
+{
+  "Ben" : -50,
+  "Mary" : 30,
+  "John" : 50,
+  "Larry" : 80,
+  "Ric" : 100
+}
+Total JSON elements: 5
+
+mydb> dbsort -k
+
+mydb> dbp
+{
+  "Ben" : -50,
+  "John" : 50,
+  "Larry" : 80,
+  "Mary" : 30,
+  "Ric" : 100
+}
+Total JSON elements: 5
+
+mydb> dbsum
+The sum of the DB is 210.
+
+mydb> 
+mydb> 
+mydb> 

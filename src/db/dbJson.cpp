@@ -109,10 +109,10 @@ DBJson::ave() const
     return NAN;
   else{
     float sum = 0.0;
-    for (float i=0; i<_obj.size(); i++){
+    for (unsigned i=0; i<_obj.size(); i++){
       sum += _obj[i].value();
     }
-    return float(sum)/_obj.size();
+    return sum/_obj.size();
   }
 }
 
